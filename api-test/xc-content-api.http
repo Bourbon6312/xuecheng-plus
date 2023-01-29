@@ -27,7 +27,7 @@ Content-Type: application/json
   "grade": "204001",
   "description": "课程介绍",
   "charge": "201001",
-  "price": "",
+  "price": "1",
   "originalPrice":"",
   "qq": "43232",
   "wechat": "4324322",

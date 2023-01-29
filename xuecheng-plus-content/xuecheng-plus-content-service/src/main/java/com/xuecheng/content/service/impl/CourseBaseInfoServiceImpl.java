@@ -51,13 +51,13 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
 
         //拼接查询条件
         //根据课程名称模糊查询  name like '%名称%'
-        queryWrapper.like(StringUtils.isNotEmpty(queryCourseParamsDto.getCourseName()),CourseBase::getName,queryCourseParamsDto.getCourseName());
+        queryWrapper.like(StringUtils.isNotEmpty(queryCourseParamsDto.getCourseName()), CourseBase::getName, queryCourseParamsDto.getCourseName());
 
         //根据课程审核状态
-        queryWrapper.eq(StringUtils.isNotEmpty(queryCourseParamsDto.getAuditStatus()),CourseBase::getAuditStatus,queryCourseParamsDto.getAuditStatus());
+        queryWrapper.eq(StringUtils.isNotEmpty(queryCourseParamsDto.getAuditStatus()), CourseBase::getAuditStatus, queryCourseParamsDto.getAuditStatus());
 
         //根据课程发布状态
-        queryWrapper.eq(StringUtils.isNotEmpty(queryCourseParamsDto.getPublishStatus()),CourseBase::getAuditStatus,queryCourseParamsDto.getPublishStatus());
+        queryWrapper.eq(StringUtils.isNotEmpty(queryCourseParamsDto.getPublishStatus()), CourseBase::getAuditStatus, queryCourseParamsDto.getPublishStatus());
 
 
         //分页参数
@@ -111,14 +111,14 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
         if (StringUtils.isBlank(dto.getCharge())) {
             throw new RuntimeException("收费规则为空");
         }
-         //对数据进行封装，调用mapper进行数据持久化
+        //对数据进行封装，调用mapper进行数据持久化
         CourseBase courseBase = new CourseBase();
         //将传入dto的数据设置到 courseBase对象
 //        courseBase.setName(dto.getName());
 //        courseBase.setMt(dto.getMt());
 //        courseBase.setSt(dto.getSt());
         //将dto中和courseBase属性名一样的属性值拷贝到courseBase
-        BeanUtils.copyProperties(dto,courseBase);
+        BeanUtils.copyProperties(dto, courseBase);
         //设置机构id
         courseBase.setCompanyId(companyId);
         //创建时间
@@ -133,12 +133,12 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
         Long courseId = courseBase.getId();
         CourseMarket courseMarket = new CourseMarket();
         //将dto中和courseMarket属性名一样的属性值拷贝到courseMarket
-        BeanUtils.copyProperties(dto,courseMarket);
+        BeanUtils.copyProperties(dto, courseMarket);
         courseMarket.setId(courseId);
         //校验如果课程为收费，价格必须输入
         String charge = dto.getCharge();
-        if(charge.equals("201001")){//收费
-            if(courseMarket.getPrice() == null || courseMarket.getPrice().floatValue()<=0){
+        if (charge.equals("201001")) {//收费
+            if (courseMarket.getPrice() == null || courseMarket.getPrice().floatValue() <= 0) {
                 throw new RuntimeException("课程为收费但是价格为空");
             }
         }
@@ -146,7 +146,7 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
         //向课程营销表插入一条记录
         int insert1 = courseMarketMapper.insert(courseMarket);
 
-        if(insert<=0|| insert1<=0){
+        if (insert <= 0 || insert1 <= 0) {
             throw new RuntimeException("添加课程失败");
         }
 
@@ -157,10 +157,11 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
 
     /**
      * 根据课程id查询课程的基本和营销信息
+     *
      * @param courseId 课程id
      * @return 课程的信息
      */
-    public CourseBaseInfoDto getCourseBaseInfo(Long courseId){
+    public CourseBaseInfoDto getCourseBaseInfo(Long courseId) {
 
         //基本信息
         CourseBase courseBase = courseBaseMapper.selectById(courseId);
@@ -169,8 +170,8 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
         CourseMarket courseMarket = courseMarketMapper.selectById(courseId);
 
         CourseBaseInfoDto courseBaseInfoDto = new CourseBaseInfoDto();
-        BeanUtils.copyProperties(courseBase,courseBaseInfoDto);
-        BeanUtils.copyProperties(courseMarket,courseBaseInfoDto);
+        BeanUtils.copyProperties(courseBase, courseBaseInfoDto);
+        BeanUtils.copyProperties(courseMarket, courseBaseInfoDto);
 
         //根据课程分类的id查询分类的名称
         String mt = courseBase.getMt();
@@ -178,12 +179,12 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
 
         CourseCategory mtCategory = courseCategoryMapper.selectById(mt);
         CourseCategory stCategory = courseCategoryMapper.selectById(st);
-        if(mtCategory!=null){
+        if (mtCategory != null) {
             //分类名称
             String mtName = mtCategory.getName();
             courseBaseInfoDto.setMtName(mtName);
         }
-        if(stCategory!=null){
+        if (stCategory != null) {
             //分类名称
             String stName = stCategory.getName();
             courseBaseInfoDto.setStName(stName);

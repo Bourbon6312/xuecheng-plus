@@ -9,6 +9,7 @@ import com.xuecheng.content.model.po.CourseBase;
 import com.xuecheng.content.service.CourseBaseInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Api(value = "课程管理接口",tags = "课程管理接口")
 @RestController
+@Slf4j
 public class CourseBaseInfoController {
 
     @Autowired
@@ -39,6 +41,8 @@ public class CourseBaseInfoController {
     @ApiOperation("新增课程")
     @PostMapping("/course")
     public CourseBaseInfoDto createCourseBase(@RequestBody AddCourseDto addCourseDto){
+
+        log.info("调用新增...");
 
         //获取当前用户所属培训机构的id
         Long companyId = 22L;
