@@ -9,8 +9,8 @@ public class RestErrorResponse implements Serializable {
 
     private String errMessage;
 
-    public RestErrorResponse(String errMessage) {
-        this.errMessage = errMessage;
+    public RestErrorResponse(String errMessage){
+        this.errMessage= errMessage;
     }
 
     public String getErrMessage() {
