@@ -8,11 +8,13 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @author Mr.M
  * @version 1.0
- * @description minio配置
- * @date 2022/9/12 19:32
+ * @description TODO
+ * @date 2022/10/13 15:17
  */
 @Configuration
 public class MinioConfig {
+
+    //读取参数
 
     @Value("${minio.endpoint}")
     private String endpoint;
@@ -23,6 +25,7 @@ public class MinioConfig {
 
     @Bean
     public MinioClient minioClient() {
+
         MinioClient minioClient =
                 MinioClient.builder()
                         .endpoint(endpoint)
@@ -31,4 +34,3 @@ public class MinioConfig {
         return minioClient;
     }
 }
-

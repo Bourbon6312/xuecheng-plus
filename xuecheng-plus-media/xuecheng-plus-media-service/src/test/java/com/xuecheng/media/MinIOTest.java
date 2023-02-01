@@ -18,7 +18,7 @@ public class MinIOTest {
 
     static MinioClient minioClient =
             MinioClient.builder()
-                    .endpoint("http://192.168.31.40:9000")
+                    .endpoint("http://192.168.101.65:9000")
                     .credentials("minioadmin", "minioadmin")
                     .build();
 
@@ -29,8 +29,8 @@ public class MinIOTest {
         try {
             UploadObjectArgs uploadObjectArgs = UploadObjectArgs.builder()
                     .bucket("testbucket")
-                    .object("GetDeviceCap.xml")//同一个桶内对象名不能重复
-                    .filename("C:\\GetDeviceCap.xml")
+                    .object("1.mp4")//同一个桶内对象名不能重复
+                    .filename("D:\\develop\\upload\\1.mp4")
                     .build();
             //上传
             minioClient.uploadObject(uploadObjectArgs);
