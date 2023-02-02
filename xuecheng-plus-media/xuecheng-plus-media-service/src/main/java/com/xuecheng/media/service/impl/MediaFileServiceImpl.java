@@ -9,10 +9,12 @@ import com.xuecheng.base.model.PageParams;
 import com.xuecheng.base.model.PageResult;
 import com.xuecheng.base.model.RestResponse;
 import com.xuecheng.media.mapper.MediaFilesMapper;
+import com.xuecheng.media.mapper.MediaProcessMapper;
 import com.xuecheng.media.model.dto.QueryMediaParamsDto;
 import com.xuecheng.media.model.dto.UploadFileParamsDto;
 import com.xuecheng.media.model.dto.UploadFileResultDto;
 import com.xuecheng.media.model.po.MediaFiles;
+import com.xuecheng.media.model.po.MediaProcess;
 import com.xuecheng.media.service.MediaFileService;
 import io.minio.*;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +50,9 @@ public class MediaFileServiceImpl implements MediaFileService {
     MediaFilesMapper mediaFilesMapper;
 
     @Autowired
+    MediaProcessMapper mediaProcessMapper;
+
+    @Autowired
     MinioClient minioClient;
 
     //普通文件存储的桶
@@ -65,8 +70,7 @@ public class MediaFileServiceImpl implements MediaFileService {
 
         //构建查询条件对象
         LambdaQueryWrapper<MediaFiles> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.like(StringUtils.isNotEmpty(queryMediaParamsDto.getFilename()), MediaFiles::getFilename, queryMediaParamsDto.getFilename());
-        queryWrapper.eq(StringUtils.isNotEmpty(queryMediaParamsDto.getFileType()), MediaFiles::getFileType, queryMediaParamsDto.getFileType());
+
         //分页对象
         Page<MediaFiles> page = new Page<>(pageParams.getPageNo(), pageParams.getPageSize());
         // 查询数据内容获得结果
@@ -222,7 +226,20 @@ public class MediaFileServiceImpl implements MediaFileService {
             mediaFiles.setCompanyId(companyId);
             mediaFiles.setBucket(bucket);
             mediaFiles.setFilePath(objectName);
-            mediaFiles.setUrl("/" + bucket + "/" + objectName);
+
+            //获取扩展名
+            String extension = null;
+            String filename = uploadFileParamsDto.getFilename();
+            if (StringUtils.isNotEmpty(filename) && filename.indexOf(".") >= 0) {
+                extension = filename.substring(filename.lastIndexOf("."));
+            }
+            //媒体类型
+            String mimeType = getMimeTypeByextension(extension);
+            //图片、mp4视频可以设置URL
+            if (mimeType.indexOf("image") >= 0 || mimeType.indexOf("mp4") >= 0) {
+                mediaFiles.setUrl("/" + bucket + "/" + objectName);
+            }
+
             mediaFiles.setCreateDate(LocalDateTime.now());
             mediaFiles.setStatus("1");
             mediaFiles.setAuditStatus("002003");
@@ -231,8 +248,15 @@ public class MediaFileServiceImpl implements MediaFileService {
             //插入文件表
             mediaFilesMapper.insert(mediaFiles);
 
-            //抛出异常,制造异常
-//            int i=1/0;
+            //对avi视频添加到待处理任务表
+            if (mimeType.equals("video/x-msvideo")) {
+
+                MediaProcess mediaProcess = new MediaProcess();
+                BeanUtils.copyProperties(mediaFiles, mediaProcess);
+                //设置一个状态
+                mediaProcess.setStatus("1");//未处理
+                mediaProcessMapper.insert(mediaProcess);
+            }
 
 
         }
@@ -389,6 +413,20 @@ public class MediaFileServiceImpl implements MediaFileService {
         }
     }
 
+    @Override
+    public MediaFiles getFileById(String id) {
+        MediaFiles mediaFiles = mediaFilesMapper.selectById(id);
+        if (mediaFiles == null) {
+            XueChengPlusException.cast("文件不存在");
+        }
+        String url = mediaFiles.getUrl();
+        if (StringUtils.isEmpty(url)) {
+            XueChengPlusException.cast("文件还没有处理，请稍后预览");
+        }
+
+        return mediaFiles;
+    }
+
     private String getFilePathByMd5(String fileMd5, String fileExt) {
         return fileMd5.substring(0, 1) + "/" + fileMd5.substring(1, 2) + "/" + fileMd5 + "/" + fileMd5 + fileExt;
     }
@@ -453,7 +491,7 @@ public class MediaFileServiceImpl implements MediaFileService {
     }
 
     //将文件上传到文件系统
-    private void addMediaFilesToMinIO(String filePath, String bucket, String objectName) {
+    public void addMediaFilesToMinIO(String filePath, String bucket, String objectName) {
         try {
             UploadObjectArgs uploadObjectArgs = UploadObjectArgs.builder()
                     .bucket(bucket)
@@ -502,6 +540,19 @@ public class MediaFileServiceImpl implements MediaFileService {
             log.debug("上传文件到文件系统出错:{}", e.getMessage());
             XueChengPlusException.cast("上传文件到文件系统出错");
         }
+    }
+
+    //根据扩展名拿匹配的媒体类型
+    private String getMimeTypeByextension(String extension) {
+        //资源的媒体类型
+        String contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;//默认未知二进制流
+        if (StringUtils.isNotEmpty(extension)) {
+            ContentInfo extensionMatch = ContentInfoUtil.findExtensionMatch(extension);
+            if (extensionMatch != null) {
+                contentType = extensionMatch.getMimeType();
+            }
+        }
+        return contentType;
     }
 
     //根据日期拼接目录
