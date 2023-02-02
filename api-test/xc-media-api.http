@@ -1,5 +1,5 @@
 ### 上传文件
-POST {{media_host}}/media/upload/coursefile
+POST {{gateway_host}}/media/upload/coursefile
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
@@ -7,3 +7,33 @@ Content-Disposition: form-data; name="filedata"; filename="widget-3.jpg"
 Content-Type: application/octet-stream
 
 < C:/Users/Macken/Downloads/屏幕截图 2022-11-27 233908.jpg
+
+Java
+### 检查文件
+POST{{media_host}}/media/upload/register
+Content-Type: application/x-www-form-urlencoded;
+
+fileMd5=c5c75d70f382e6016d2f506d134eee11
+
+### 上传分块前检查
+POST {{media_host}}/media/upload/checkchunk
+Content-Type: application/x-www-form-urlencoded;
+
+fileMd5=c5c75d70f382e6016d2f506d134eee11&chunk=0
+
+### 上传分块文件
+POST {{media_host}}/media/upload/uploadchunk?fileMd5=c5c75d70f382e6016d2f506d134eee11&chunk=1
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="1"
+Content-Type: application/octet-stream
+
+< E:/ffmpeg_test/chunks/1
+
+
+### 合并文件
+POST {{media_host}}/media/upload/mergechunks
+Content-Type: application/x-www-form-urlencoded;
+
+fileMd5=dcb37b85c9c03fc5243e20ab4dfbc1c8&fileName=8.avi&chunkTotal=1

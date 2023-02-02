@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author itcast
@@ -38,6 +38,8 @@ public class MediaProcessHistory implements Serializable {
      */
     private String bucket;
 
+    private String filePath;
+
     /**
      * 状态,1:未处理，视频处理完成更新为2
      */
@@ -58,6 +60,9 @@ public class MediaProcessHistory implements Serializable {
      * 媒资文件访问地址
      */
     private String url;
-
+    /**
+     * 失败原因
+     */
+    private String errormsg;
 
 }
