@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface TeachplanService {
 
-    public List<TeachplanDto> findTeachplayTree(Long courseId);
+    public List<TeachplanDto> findTeachplanTree(Long courseId);
 
     /**
      * @param dto
