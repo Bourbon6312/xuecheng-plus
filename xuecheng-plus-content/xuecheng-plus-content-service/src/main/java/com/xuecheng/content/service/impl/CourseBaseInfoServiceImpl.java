@@ -57,13 +57,13 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
 
         //拼接查询条件
         //根据课程名称模糊查询  name like '%名称%'
-        queryWrapper.like(StringUtils.isNotEmpty(queryCourseParamsDto.getCourseName()),CourseBase::getName,queryCourseParamsDto.getCourseName());
+        queryWrapper.like(StringUtils.isNotEmpty(queryCourseParamsDto.getCourseName()), CourseBase::getName, queryCourseParamsDto.getCourseName());
 
         //根据课程审核状态
-        queryWrapper.eq(StringUtils.isNotEmpty(queryCourseParamsDto.getAuditStatus()),CourseBase::getAuditStatus,queryCourseParamsDto.getAuditStatus());
+        queryWrapper.eq(StringUtils.isNotEmpty(queryCourseParamsDto.getAuditStatus()), CourseBase::getAuditStatus, queryCourseParamsDto.getAuditStatus());
 
         //根据课程发布状态
-        queryWrapper.eq(StringUtils.isNotEmpty(queryCourseParamsDto.getPublishStatus()),CourseBase::getStatus,queryCourseParamsDto.getPublishStatus());
+        queryWrapper.eq(StringUtils.isNotEmpty(queryCourseParamsDto.getPublishStatus()), CourseBase::getStatus, queryCourseParamsDto.getPublishStatus());
 
         //分页参数
         Page<CourseBase> page = new Page<>(params.getPageNo(), params.getPageSize());
@@ -128,7 +128,7 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
 //        courseBase.setName(dto.getName());
 //        courseBase.setGrade(dto.getGrade());
         //以上设置数据的方法可以拷贝,从源拷贝到目标
-        BeanUtils.copyProperties(dto,courseBase);
+        BeanUtils.copyProperties(dto, courseBase);
         //设置机构id
         courseBase.setCompanyId(companyId);
         //创建时间
@@ -146,7 +146,7 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
         //向课程营销表添加数据
         CourseMarket courseMarket = new CourseMarket();
         //两个对象的属性名一致，类型一样
-        BeanUtils.copyProperties(dto,courseMarket);
+        BeanUtils.copyProperties(dto, courseMarket);
         courseMarket.setId(courseId);
         //校验如果课程为收费，必须输入价格且大于0
 //        String charge = courseMarket.getCharge();
@@ -163,8 +163,8 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
 //        int insert1 = courseMarketMapper.insert(courseMarket);
 //        if(insert<1 && insert1<1){
         //只要有一个插入不成功抛出异常
-        if(insert<1 || insert1<1){
-            log.error("创建课程过程中出错:{}",dto);
+        if (insert < 1 || insert1 < 1) {
+            log.error("创建课程过程中出错:{}", dto);
             throw new RuntimeException("创建课程过程中出错");
         }
 
@@ -174,22 +174,22 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
     }
 
     /**
-     * @description 根据课程id查询课程信息，包括基本信息和营销信息
      * @param courseId
      * @return com.xuecheng.content.model.dto.CourseBaseInfoDto
+     * @description 根据课程id查询课程信息，包括基本信息和营销信息
      * @author Mr.M
      * @date 2022/10/8 16:10
-    */
-    public CourseBaseInfoDto getCourseBaseInfo(Long courseId){
+     */
+    public CourseBaseInfoDto getCourseBaseInfo(Long courseId) {
         //课程基本信息
         CourseBase courseBase = courseBaseMapper.selectById(courseId);
         //课程营销信息
         CourseMarket courseMarket = courseMarketMapper.selectById(courseId);
         //组成要返回的数据
         CourseBaseInfoDto courseBaseInfoDto = new CourseBaseInfoDto();
-        BeanUtils.copyProperties(courseBase,courseBaseInfoDto);
-        if(courseMarket!=null){
-            BeanUtils.copyProperties(courseMarket,courseBaseInfoDto);
+        BeanUtils.copyProperties(courseBase, courseBaseInfoDto);
+        if (courseMarket != null) {
+            BeanUtils.copyProperties(courseMarket, courseBaseInfoDto);
         }
 
         //向分类的名称查询出来
@@ -208,17 +208,17 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
         //课程id
         Long id = dto.getId();
         CourseBase courseBase = courseBaseMapper.selectById(id);
-        if(courseBase==null){
+        if (courseBase == null) {
             XueChengPlusException.cast("课程不存在");
         }
 
         //校验本机构只能修改本机构的课程
-        if(!courseBase.getCompanyId().equals(companyId)){
+        if (!courseBase.getCompanyId().equals(companyId)) {
             XueChengPlusException.cast("本机构只能修改本机构的课程");
         }
 
         //封装基本信息的数据
-        BeanUtils.copyProperties(dto,courseBase);
+        BeanUtils.copyProperties(dto, courseBase);
         courseBase.setChangeDate(LocalDateTime.now());
 
         //更新课程基本信息
@@ -226,7 +226,7 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
 
         //封装营销信息的数据
         CourseMarket courseMarket = new CourseMarket();
-        BeanUtils.copyProperties(dto,courseMarket);
+        BeanUtils.copyProperties(dto, courseMarket);
 
         //校验如果课程为收费，必须输入价格且大于0
 //        String charge = courseMarket.getCharge();
@@ -249,15 +249,15 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
     }
 
     //抽取对营销的保存
-    private int saveCourseMarket(CourseMarket courseMarket){
+    private int saveCourseMarket(CourseMarket courseMarket) {
 
 
         String charge = courseMarket.getCharge();
-        if(StringUtils.isBlank(charge)){
+        if (StringUtils.isBlank(charge)) {
             XueChengPlusException.cast("收费规则没有选择");
         }
-        if(charge.equals("201001")){
-            if(courseMarket.getPrice()==null || courseMarket.getPrice().floatValue()<=0){
+        if (charge.equals("201001")) {
+            if (courseMarket.getPrice() == null || courseMarket.getPrice().floatValue() <= 0) {
 //                throw new RuntimeException("课程为收费价格不能为空且必须大于0");
                 XueChengPlusException.cast("课程为收费价格不能为空且必须大于0");
 
@@ -267,7 +267,7 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
         //保存
         boolean b = courseMarketService.saveOrUpdate(courseMarket);
 
-        return b?1:0;
+        return b ? 1 : 0;
 
     }
 

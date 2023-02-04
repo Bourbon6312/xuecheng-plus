@@ -10,21 +10,21 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * @description TODO
  * @author Mr.M
- * @date 2022/10/8 15:05
  * @version 1.0
+ * @description TODO
+ * @date 2022/10/8 15:05
  */
 @Slf4j
- @Service
+@Service
 public class CourseCategoryServiceImpl implements CourseCategoryService {
 
- @Autowired
- CourseCategoryMapper courseCategoryMapper;
+    @Autowired
+    CourseCategoryMapper courseCategoryMapper;
 
 
- @Override
- public List<CourseCategoryTreeDto> queryTreeNodes() {
-  return courseCategoryMapper.selectTreeNodes();
- }
+    @Override
+    public List<CourseCategoryTreeDto> queryTreeNodes() {
+        return courseCategoryMapper.selectTreeNodes();
+    }
 }
