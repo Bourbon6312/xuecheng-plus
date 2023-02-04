@@ -37,14 +37,14 @@ public class CoursePublishController {
         return modelAndView;
     }
 
-//    //提交审核
-//    @ResponseBody
-//    @PostMapping("/courseaudit/commit/{courseId}")
-//    public void commitAudit(@PathVariable("courseId") Long courseId) {
-//        Long companyId = 1232141425L;
-//        coursePublishService.commitAudit(companyId, courseId);
-//    }
-//
+    //提交审核
+    @ResponseBody
+    @PostMapping("/courseaudit/commit/{courseId}")
+    public void commitAudit(@PathVariable("courseId") Long courseId) {
+        Long companyId = 1232141425L;
+        coursePublishService.commitAudit(companyId, courseId);
+    }
+
 //    @ApiOperation("课程发布")
 //    @ResponseBody
 //    @PostMapping("/coursepublish/{courseId}")
