@@ -6,6 +6,8 @@ import com.xuecheng.content.config.MultipartSupportConfig;
 import com.xuecheng.content.feignclient.MediaServiceClient;
 //import com.xuecheng.content.feignclient.SearchServiceClient;
 //import com.xuecheng.content.feignclient.model.CourseIndex;
+import com.xuecheng.content.feignclient.SearchServiceClient;
+import com.xuecheng.content.feignclient.model.CourseIndex;
 import com.xuecheng.content.mapper.CourseBaseMapper;
 import com.xuecheng.content.mapper.CourseMarketMapper;
 import com.xuecheng.content.mapper.CoursePublishMapper;
@@ -68,12 +70,11 @@ public class CoursePublishServiceImpl implements CoursePublishService {
     @Autowired
     CoursePublishPreMapper coursePublishPreMapper;
 
+    @Autowired
+    SearchServiceClient searchServiceClient;
 
     @Autowired
     MqMessageService mqMessageService;
-
-//    @Autowired
-//    SearchServiceClient searchServiceClient;
 
     @Autowired
     MediaServiceClient mediaServiceClient;
@@ -243,24 +244,23 @@ public class CoursePublishServiceImpl implements CoursePublishService {
         }
     }
 
+    @Override
+    public Boolean saveCourseIndex(Long courseId) {
 
-//    @Override
-//    public Boolean saveCourseIndex(Long courseId) {
-//
-//        //查询课程发布表的数据
-//        CoursePublish coursePublish = coursePublishMapper.selectById(courseId);
-//        //...异常处理
-//        //组装数据
-//        CourseIndex courseIndex = new CourseIndex();
-//        BeanUtils.copyProperties(coursePublish, courseIndex);
-//
-//        //远程调用搜索服务创建索引
-//        Boolean result = searchServiceClient.add(courseIndex);
-//        if (!result) {
-//            XueChengPlusException.cast("创建课程索引失败");
-//        }
-//        return result;
-//    }
+        //查询课程发布表的数据
+        CoursePublish coursePublish = coursePublishMapper.selectById(courseId);
+        //...异常处理
+        //组装数据
+        CourseIndex courseIndex = new CourseIndex();
+        BeanUtils.copyProperties(coursePublish, courseIndex);
+
+        //远程调用搜索服务创建索引
+        Boolean result = searchServiceClient.add(courseIndex);
+        if (!result) {
+            XueChengPlusException.cast("创建课程索引失败");
+        }
+        return result;
+    }
 
 
     //保存课程发布信息

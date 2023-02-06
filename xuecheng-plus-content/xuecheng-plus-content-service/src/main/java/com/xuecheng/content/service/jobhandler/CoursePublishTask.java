@@ -54,31 +54,31 @@ public class CoursePublishTask extends MessageProcessAbstract {
 //        saveCourseCache(mqMessage,courseId);
 
         //创建课程索引
-//        saveCourseIndex(mqMessage, courseId);
+        saveCourseIndex(mqMessage, courseId);
 
 
         return true;
     }
 
-//    //课程静态化
-//    private void saveCourseIndex(MqMessage mqMessage, Long courseId) {
-//        //任务id
-//        Long id = mqMessage.getId();
-//        //作消息幂等性处理
-//        //如果该阶段任务完成了不再处理直接返回
-//        int stageTwo = this.getMqMessageService().getStageTwo(id);//第二阶段的状态
-//        if (stageTwo > 0) {
-//            log.debug("当前阶段是创建课程索引,已经完成不再处理,任务信息:{}", mqMessage);
-//            return;
-//        }
-//
-//        //调用service创建索引
-//        coursePublishService.saveCourseIndex(courseId);
-//
-//
-//        //给该阶段任务打上完成标记
-//        this.getMqMessageService().completedStageTwo(id);//完成第二阶段的任务
-//    }
+    //课程静态化
+    private void saveCourseIndex(MqMessage mqMessage, Long courseId) {
+        //任务id
+        Long id = mqMessage.getId();
+        //作消息幂等性处理
+        //如果该阶段任务完成了不再处理直接返回
+        int stageTwo = this.getMqMessageService().getStageTwo(id);//第二阶段的状态
+        if (stageTwo > 0) {
+            log.debug("当前阶段是创建课程索引,已经完成不再处理,任务信息:{}", mqMessage);
+            return;
+        }
+
+        //调用service创建索引
+        coursePublishService.saveCourseIndex(courseId);
+
+
+        //给该阶段任务打上完成标记
+        this.getMqMessageService().completedStageTwo(id);//完成第二阶段的任务
+    }
 
     //课程静态化
     private void generateCourseHtml(MqMessage mqMessage, Long courseId) {
