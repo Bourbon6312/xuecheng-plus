@@ -39,6 +39,10 @@ GET {{content_host}}/content/course/40
 Content-Type: application/json
 
 
+### 携带token访问资源服务
+GET http://localhost:63040/content/course/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsieHVlY2hlbmctcGx1cyJdLCJ1c2VyX25hbWUiOiJ6aGFuZ3NhbiIsInNjb3BlIjpbImFsbCJdLCJleHAiOjE2NzU3MTE3MTYsImF1dGhvcml0aWVzIjpbInAxIl0sImp0aSI6IjUzNDMwYTdhLTFkN2UtNGU0NC05NmM2LTgxNjJkYzYwZjg4ZCIsImNsaWVudF9pZCI6IlhjV2ViQXBwIn0._U0lDsa5EWoP_n0hXQc7UBksohw9MC9GgRkJDHa4LDk
+
 
 ### 修改课程
 PUT {{content_host}}/content/course
@@ -66,3 +70,7 @@ Content-Type: application/json
 
 ### 课程发布
 POST {{content_host}}/content/coursepublish/2
+
+### 通过网关访问资源服务
+GET http://localhost:63010/content/course/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsieHVlY2hlbmctcGx1cyJdLCJ1c2VyX25hbWUiOiJ6aGFuZ3NhbiIsInNjb3BlIjpbImFsbCJdLCJleHAiOjE2NzU3MTY0NDIsImF1dGhvcml0aWVzIjpbInAxIl0sImp0aSI6ImFkYmRlNTA4LTVjMjQtNGVmYy04MDg2LTI3NjU0NTg0OWMyZCIsImNsaWVudF9pZCI6IlhjV2ViQXBwIn0.bAOi2jpux6yRobRNCVPJjJksw8OVMTcokdPbO16JCqQ
