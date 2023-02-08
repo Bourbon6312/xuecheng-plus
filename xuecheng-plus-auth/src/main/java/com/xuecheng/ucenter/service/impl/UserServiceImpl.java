@@ -26,9 +26,6 @@ public class UserServiceImpl implements UserDetailsService {
     @Autowired
     ApplicationContext applicationContext;
 
-    @Autowired
-    AuthService authService;
-
 
 //    /**
 //     * 根据账号查询用户信息
