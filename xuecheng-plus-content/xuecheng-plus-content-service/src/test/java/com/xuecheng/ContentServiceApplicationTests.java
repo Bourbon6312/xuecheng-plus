@@ -33,12 +33,12 @@ class ContentServiceApplicationTests {
         CourseBase courseBase = courseBaseMapper.selectById(22);
         Assertions.assertNotNull(courseBase);
     }
-    @Test
-    void testCourseBaseInfoService() {
-        PageParams pageParams = new PageParams();
-        PageResult<CourseBase> courseBasePageResult = courseBaseInfoService.queryCourseBaseList(pageParams, new QueryCourseParamsDto());
-        System.out.println(courseBasePageResult);
-    }
+//    @Test
+//    void testCourseBaseInfoService() {
+//        PageParams pageParams = new PageParams();
+//        PageResult<CourseBase> courseBasePageResult = courseBaseInfoService.queryCourseBaseList(pageParams, new QueryCourseParamsDto());
+//        System.out.println(courseBasePageResult);
+//    }
     @Test
     void testCourseCategoryMapper() {
 

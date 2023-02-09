@@ -13,16 +13,17 @@ import com.xuecheng.content.util.SecurityUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * @description 课程信息管理
  * @author Mr.M
- * @date 2022/10/7 16:22
  * @version 1.0
+ * @description 课程信息管理
+ * @date 2022/10/7 16:22
  */
-@Api(value = "课程管理接口",tags = "课程管理接口")
+@Api(value = "课程管理接口", tags = "课程管理接口")
 @RestController
 public class CourseBaseInfoController {
 
@@ -31,23 +32,31 @@ public class CourseBaseInfoController {
 
     @ApiOperation("课程查询接口")
     @PostMapping("/course/list")
-  public PageResult<CourseBase> list(PageParams params, @RequestBody QueryCourseParamsDto queryCourseParamsDto){
-        //调用service获取数据
-        PageResult<CourseBase> courseBasePageResult = courseBaseInfoService.queryCourseBaseList(params, queryCourseParamsDto);
+    @PreAuthorize("hasAuthority('course_find_list')")
+    public PageResult<CourseBase> list(PageParams params, @RequestBody QueryCourseParamsDto queryCourseParamsDto) {
+        //取出用户身份
+        SecurityUtil.XcUser user = SecurityUtil.getUser();
+        //机构id
+        String companyId = user.getCompanyId();
+        return courseBaseInfoService.queryCourseBaseList(Long.parseLong(companyId), params, queryCourseParamsDto);
 
-        return  courseBasePageResult;
+
+//        //调用service获取数据
+//        PageResult<CourseBase> courseBasePageResult = courseBaseInfoService.queryCourseBaseList(params, queryCourseParamsDto);
+//
+//        return  courseBasePageResult;
     }
 
     @PostMapping("/course")
-    public CourseBaseInfoDto createCourseBase(@RequestBody @Validated(ValidationGroups.Inster.class) AddCourseDto addCourseDto){
+    public CourseBaseInfoDto createCourseBase(@RequestBody @Validated(ValidationGroups.Inster.class) AddCourseDto addCourseDto) {
 
         Long companyId = 22L;
-        return courseBaseInfoService.createCourseBase(companyId,addCourseDto);
+        return courseBaseInfoService.createCourseBase(companyId, addCourseDto);
     }
 
 
     @GetMapping("/course/{courseId}")
-    public CourseBaseInfoDto getCourseBaseById(@PathVariable Long courseId){
+    public CourseBaseInfoDto getCourseBaseById(@PathVariable Long courseId) {
         SecurityUtil.XcUser user = SecurityUtil.getUser();
         System.out.println(user);
 
@@ -55,10 +64,10 @@ public class CourseBaseInfoController {
     }
 
     @PutMapping("/course")
-    public CourseBaseInfoDto modifyCourseBase(@RequestBody EditCourseDto dto){
+    public CourseBaseInfoDto modifyCourseBase(@RequestBody EditCourseDto dto) {
 
-        Long companyId =1232141425L;
-        return courseBaseInfoService.updateCourseBase(companyId,dto);
+        Long companyId = 1232141425L;
+        return courseBaseInfoService.updateCourseBase(companyId, dto);
     }
 
 
@@ -69,7 +78,6 @@ public class CourseBaseInfoController {
 //        Long companyId = 22L;
 //        return courseBaseInfoService.createCourseBase(companyId,addCourseDto);
 //    }
-
 
 
 }

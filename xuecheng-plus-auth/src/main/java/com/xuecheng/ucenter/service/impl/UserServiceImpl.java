@@ -2,9 +2,11 @@ package com.xuecheng.ucenter.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.xuecheng.ucenter.mapper.XcMenuMapper;
 import com.xuecheng.ucenter.mapper.XcUserMapper;
 import com.xuecheng.ucenter.model.dto.AuthParamsDto;
 import com.xuecheng.ucenter.model.dto.XcUserExt;
+import com.xuecheng.ucenter.model.po.XcMenu;
 import com.xuecheng.ucenter.model.po.XcUser;
 import com.xuecheng.ucenter.service.AuthService;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +18,18 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 @Service
 public class UserServiceImpl implements UserDetailsService {
 
     @Autowired
     XcUserMapper xcUserMapper;
+
+    @Autowired
+    XcMenuMapper xcMenuMapper;
 
     @Autowired
     ApplicationContext applicationContext;
@@ -85,8 +93,18 @@ public class UserServiceImpl implements UserDetailsService {
      * @return
      */
     public UserDetails getUserPrincipal(XcUserExt user) {
+        //查询用户权限
+        List<XcMenu> xcMenus = xcMenuMapper.selectPermissionByUserId(user.getId());
+
         //用户权限,如果不加报Cannot pass a null GrantedAuthority collection
-        String[] authorities = {"p1"};
+        List<String> list = new ArrayList<>();
+        xcMenus.forEach(xcMenu -> {
+            list.add(xcMenu.getCode());
+        });
+
+        String[] authorities = {"test"};
+        if (list.size() > 0) authorities = list.toArray(new String[0]);
+
         String password = user.getPassword();
         //为了安全在令牌中不放密码
         user.setPassword(null);
