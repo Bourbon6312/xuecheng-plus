@@ -42,6 +42,7 @@ public class MyCourseTablesServiceImpl implements MyCourseTablesService {
 
     //添加选课
     @Override
+    //也可以用SecurityUtil.XcUser接userId，但这样写更完善
     public XcChooseCourseDto addChooseCourse(String userId, Long courseId) {
 
         //调用内容管理服务查询课程信息
@@ -49,11 +50,11 @@ public class MyCourseTablesServiceImpl implements MyCourseTablesService {
         //收费规则
         String charge = coursepublish.getCharge();
         XcChooseCourse xcChooseCourse = null;
-        if("201000".equals(charge)){//免费课程
+        if ("201000".equals(charge)) {//免费课程
             //添加免费课程
             xcChooseCourse = addFreeCoruse(userId, coursepublish);
 
-        }else{
+        } else {
             //收费课程，只能添加到选课记录表
             xcChooseCourse = addChargeCoruse(userId, coursepublish);
         }
@@ -65,7 +66,7 @@ public class MyCourseTablesServiceImpl implements MyCourseTablesService {
 
         //构造返回对象
         XcChooseCourseDto xcChooseCourseDto = new XcChooseCourseDto();
-        BeanUtils.copyProperties(xcChooseCourse,xcChooseCourseDto);
+        BeanUtils.copyProperties(xcChooseCourse, xcChooseCourseDto);
         xcChooseCourseDto.setLearnStatus(learnStatus);//学习资格
 
         return xcChooseCourseDto;
@@ -77,14 +78,14 @@ public class MyCourseTablesServiceImpl implements MyCourseTablesService {
         //从哪里查询数据进行判断学习资格
         XcCourseTables xcCourseTables = getXcCourseTables(userId, courseId);
         XcCourseTablesDto xcCourseTablesDto = new XcCourseTablesDto();
-        if(xcCourseTables == null){
+        if (xcCourseTables == null) {
             xcCourseTablesDto.setLearnStatus("702002");//没有学习资格
             return xcCourseTablesDto;
         }
-        BeanUtils.copyProperties(xcCourseTables,xcCourseTablesDto);
+        BeanUtils.copyProperties(xcCourseTables, xcCourseTablesDto);
         //判断课程是否过期
         LocalDateTime validtimeEnd = xcCourseTables.getValidtimeEnd();
-        if(LocalDateTime.now().isAfter(validtimeEnd)){//说明课程已过期
+        if (LocalDateTime.now().isAfter(validtimeEnd)) {//说明课程已过期
             xcCourseTablesDto.setLearnStatus("702003");//已经过期
             return xcCourseTablesDto;
         }
@@ -104,7 +105,7 @@ public class MyCourseTablesServiceImpl implements MyCourseTablesService {
                 .eq(XcChooseCourse::getOrderType, "700001")//免费课程
                 .eq(XcChooseCourse::getStatus, "701001");
         List<XcChooseCourse> xcChooseCourses = chooseCourseMapper.selectList(queryWrapper);
-        if(xcChooseCourses!=null && xcChooseCourses.size()>0){
+        if (xcChooseCourses != null && xcChooseCourses.size() > 0) {
             return xcChooseCourses.get(0);
         }
 
@@ -132,7 +133,7 @@ public class MyCourseTablesServiceImpl implements MyCourseTablesService {
 
     //添加收费课程
     @Transactional
-    public XcChooseCourse addChargeCoruse(String userId,CoursePublish coursepublish){
+    public XcChooseCourse addChargeCoruse(String userId, CoursePublish coursepublish) {
         //课程id
         Long courseId = coursepublish.getId();
         //校验该课程是否添加到了选课记录表，如果已添加则直接返回
@@ -141,7 +142,7 @@ public class MyCourseTablesServiceImpl implements MyCourseTablesService {
                 .eq(XcChooseCourse::getOrderType, "700002")//收费课程
                 .eq(XcChooseCourse::getStatus, "701002");//待支付
         List<XcChooseCourse> xcChooseCourses = chooseCourseMapper.selectList(queryWrapper);
-        if(xcChooseCourses!=null && xcChooseCourses.size()>0){
+        if (xcChooseCourses != null && xcChooseCourses.size() > 0) {
             return xcChooseCourses.get(0);
         }
 
@@ -165,21 +166,21 @@ public class MyCourseTablesServiceImpl implements MyCourseTablesService {
     }
 
     /**
-     * @description 添加到我的课程表
      * @param xcChooseCourse 选课记录
      * @return com.xuecheng.learning.model.po.XcCourseTables
+     * @description 添加到我的课程表
      * @author Mr.M
      * @date 2022/10/3 11:24
      */
     @Transactional
-    public XcCourseTables addCourseTabls(XcChooseCourse xcChooseCourse){
+    public XcCourseTables addCourseTabls(XcChooseCourse xcChooseCourse) {
         //校验该课程在我的课程表中是否存在
         //课程id
         Long courseId = xcChooseCourse.getCourseId();
         //用户id
         String userId = xcChooseCourse.getUserId();
         XcCourseTables xcCourseTables = getXcCourseTables(userId, courseId);
-        if(xcCourseTables!=null){
+        if (xcCourseTables != null) {
             return xcCourseTables;
         }
         //向我的课程表添加记录
@@ -201,14 +202,14 @@ public class MyCourseTablesServiceImpl implements MyCourseTablesService {
     }
 
     /**
-     * @description 根据课程和用户查询我的课程表中某一门课程
      * @param userId
      * @param courseId
      * @return com.xuecheng.learning.model.po.XcCourseTables
+     * @description 根据课程和用户查询我的课程表中某一门课程
      * @author Mr.M
      * @date 2022/10/2 17:07
      */
-    public XcCourseTables getXcCourseTables(String userId,Long courseId){
+    public XcCourseTables getXcCourseTables(String userId, Long courseId) {
 
 
         LambdaQueryWrapper<XcCourseTables> queryWrapper = new LambdaQueryWrapper<XcCourseTables>().eq(XcCourseTables::getCourseId, courseId)
