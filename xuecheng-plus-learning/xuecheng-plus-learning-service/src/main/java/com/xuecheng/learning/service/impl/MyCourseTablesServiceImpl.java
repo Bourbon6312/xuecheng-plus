@@ -42,7 +42,6 @@ public class MyCourseTablesServiceImpl implements MyCourseTablesService {
 
     //添加选课
     @Override
-    //也可以用SecurityUtil.XcUser接userId，但这样写更完善
     public XcChooseCourseDto addChooseCourse(String userId, Long courseId) {
 
         //调用内容管理服务查询课程信息
